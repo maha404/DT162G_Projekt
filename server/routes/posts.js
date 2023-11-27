@@ -62,6 +62,17 @@ router.get('/most-recent', async (req, res) => {
     }
 })
 
+// Delete a post from the database
+router.delete('/posts/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await Post.findByIdAndDelete(id);
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(404).json({msg: error.message})
+    }
+})
+
 //COMMENTS
 router.post('/posts/:id/comments', (req, res) => {
     res.json({msg: 'Lägger till kommentar på specifik post!'})
