@@ -29,8 +29,15 @@ router.get('/posts', async (req, res) => {
     }
 })
 
-router.get('/posts/:id', (req, res) => {
-    res.json({msg: 'Specifik post hämtades!'})
+// Get specific post from database by id
+router.get('/posts/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await Post.find({ _id: `${id}`})
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(400).json({msg: error.message})
+    }
 })
 
 router.put('/posts/:id', (req, res) => {
