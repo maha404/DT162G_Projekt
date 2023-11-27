@@ -52,8 +52,14 @@ router.put('/posts/:id', async (req, res) => {
 
 })
 
-router.get('/posts/mostrecent', (req, res) => {
-    res.json({msg: 'Hämtar senaste posten!'})
+// Get the most recent post from database by date/time
+router.get('/most-recent', async (req, res) => {
+    try {
+        const recentPost = await Post.find().sort({createdAt:-1})
+        res.status(200).json(recentPost)
+    } catch (error) {
+        res.status(400).json({msg: error.message})
+    }
 })
 
 //COMMENTS
