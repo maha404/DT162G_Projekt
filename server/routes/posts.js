@@ -83,8 +83,14 @@ router.post('/login', (req, res) => {
     res.json({msg: 'Användare inloggad!'})
 })
 
-router.post('/register', (req, res) => {
-    res.json({msg: 'Användare registrerad!'})
+router.post('/register', async (req, res) => {
+    const {username, password} = req.body
+    try {
+        const user = await User.create({username, password})
+        res.status(200).json(user)
+    } catch (error) {
+        res.status(400).json({msg: error.message})
+    }
 })
 
 module.exports = router
