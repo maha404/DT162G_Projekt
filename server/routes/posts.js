@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 const Post = require('../models/PostModel');
 const User = require('../models/UserModel');
@@ -11,7 +11,12 @@ router.use(express.json());
 //POSTS
 
 // Post a post to database
-router.post('/posts', async (req, res) => {
+router.post('/posts', verifyToken, async (req, res) => {
+    jwt.verify(req.token, 'secret', (err) => {
+        if(err) {
+            res.sendStatus(403)
+        } 
+    })
     const {title, content, author} = req.body
     try {
         const post = await Post.create({title, content, author})
@@ -81,9 +86,47 @@ router.post('/posts/:id/comments', (req, res) => {
 })
 
 // USERS
-router.post('/login', (req, res) => {
-    res.json({msg: 'Användare inloggad!'})
+router.post('/login', async (req, res) => {
+    const {username, password} = req.body;
+
+    try {
+        // Check if user is in the database
+        const user = await User.findOne({ username })
+
+        // If user can't be found an error message will be sent
+        if(!user) {
+            res.status(404).send("Användaren kunde inte hittas!")
+        }
+        // Check if the password is the same as in the database
+        const validPassword = await bcrypt.compare(password, user.password)
+
+        // If password is not valid a error message will be sent
+        if (!validPassword) {
+            res.status(401).send('Lösenordet är felaktigt!')
+        }
+
+        // Generate token
+        jwt.sign({ user: user }, 'secret', (err, token) => {
+            res.json({
+                token
+            })
+        });
+
+    } catch (error) {
+
+    }
 })
+
+function verifyToken (req, res, next) {
+    const bearerHeader = req.headers['authorization']
+    if(typeof bearerHeader !== 'undefined') {
+        const bearerToken = bearerHeader.split(' ')[1]
+        req.token = bearerToken
+        next()
+    } else {
+        res.sendStatus(403)
+    }
+}
 
 router.post('/register', async (req, res) => {
     try {
