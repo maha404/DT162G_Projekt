@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 const Post = require('../models/PostModel');
 const User = require('../models/UserModel');
 const Comment = require('../models/CommentModel');
@@ -84,9 +86,12 @@ router.post('/login', (req, res) => {
 })
 
 router.post('/register', async (req, res) => {
-    const {username, password} = req.body
     try {
-        const user = await User.create({username, password})
+        const hashedPassword = await bcrypt.hash(req.body.password, 10); // Hashed password saved in variable
+        const user = await User.create({
+            username: req.body.username, 
+            password: hashedPassword
+        })
         res.status(200).json(user)
     } catch (error) {
         res.status(400).json({msg: error.message})
