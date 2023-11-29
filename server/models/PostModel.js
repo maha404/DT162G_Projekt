@@ -16,8 +16,9 @@ const postSchema = new Schema({
         required: true
     }, 
     comments: [{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: "comments"
+        _id: {type: mongoose.Schema.Types.ObjectId, ref:'comments'}, 
+        author: String, 
+        content: String
     }]
 }, { timestamps: true }) // Lägger till datum för posten (Tillagd och uppdaterad)
 
