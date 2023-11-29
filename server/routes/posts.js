@@ -81,8 +81,23 @@ router.delete('/posts/:id', async (req, res) => {
 })
 
 //COMMENTS
-router.post('/posts/:id/comments', (req, res) => {
-    res.json({msg: 'Lägger till kommentar på specifik post!'})
+router.post('/posts/:id/comments', async (req, res) => {
+    const id = req.params.id;
+    const {author, content, post} = req.body
+    try {
+        const comment = await Comment.create({ author, content, post })
+        const updatedPost = await Post.findOneAndUpdate(
+            {_id: id}, 
+            {
+                $push: { comments: comment} 
+            },
+            {new: true}
+        )
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        res.status(400).json({msg: error.message})
+    }
+
 })
 
 // Removes all the comments based on the id of the post
