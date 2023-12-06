@@ -106,17 +106,6 @@ router.post('/posts/:id/comments', async (req, res) => {
 
 })
 
-// Removes all the comments based on the id of the post
-router.delete('/posts/:id/comments', async (req, res) => {
-    try {
-        const id = req.params.id;
-        
-        res.status(200).json(result)
-    } catch (error) {
-        res.status(400).json({msg: error.message})
-    }
-})
-
 // USERS
 router.post('/login', async (req, res) => {
     const {username, password} = req.body;
