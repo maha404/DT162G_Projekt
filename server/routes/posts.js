@@ -69,12 +69,18 @@ router.get('/most-recent', async (req, res) => {
     }
 })
 
-// Delete a post from the database
+// Delete a post from the database and the associated comments from comment document
 router.delete('/posts/:id', async (req, res) => {
+    let data = [];
     try {
         const id = req.params.id;
         const result = await Post.findByIdAndDelete(id);
-        res.status(200).json(result)
+        data['data1'] = result;
+
+        const removeComments = await Comment.deleteMany({post: id}) // Only deletes all the comments connected to the post 
+        data['data2'] = removeComments;
+
+        return res.status(200).json(data)
     } catch (error) {
         res.status(404).json({msg: error.message})
     }
@@ -104,7 +110,7 @@ router.post('/posts/:id/comments', async (req, res) => {
 router.delete('/posts/:id/comments', async (req, res) => {
     try {
         const id = req.params.id;
-        const result = await Comment.deleteMany({post: id})
+        
         res.status(200).json(result)
     } catch (error) {
         res.status(400).json({msg: error.message})
