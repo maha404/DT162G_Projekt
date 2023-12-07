@@ -12,7 +12,7 @@ router.use(express.json());
 
 // Post a post to database
 router.post('/posts', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secret', async (err) => {
+    jwt.verify(req.jwt, 'secret', async (err) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -40,7 +40,7 @@ router.get('/posts', async (req, res) => {
 
 // Get specific post from database by id
 router.get('/posts/:id', verifyToken, (req, res) => {
-   jwt.verify(req.token, 'secret', async (err) => {
+   jwt.verify(req.jwt, 'secret', async (err) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -57,7 +57,7 @@ router.get('/posts/:id', verifyToken, (req, res) => {
 
 // Update specific post in database
 router.put('/posts/:id', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secret', async (err) => {
+    jwt.verify(req.jwt, 'secret', async (err) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -86,7 +86,7 @@ router.get('/most-recent', async (req, res) => {
 
 // Delete a post from the database and the associated comments from comment document
 router.delete('/posts/:id', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secret', async(err) => {
+    jwt.verify(req.jwt, 'secret', async(err) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -110,7 +110,7 @@ router.delete('/posts/:id', verifyToken, (req, res) => {
 
 //COMMENTS
 router.post('/posts/:id/comments', verifyToken, (req, res) => {
-    jwt.verify(req.token, 'secret', async (err) => {
+    jwt.verify(req.jwt, 'secret', async (err) => {
         if(err) {
             res.sendStatus(403)
         } else {
@@ -155,10 +155,9 @@ router.post('/login', async (req, res) => {
         }
 
         // Generate token
-        jwt.sign({ user: user }, 'secret', (err, token) => {
-            res.json({
-                token
-            })
+        jwt.sign({ user: user }, 'secret', {expiresIn: "1h"}, (err, token) => {
+            res.cookie('jwt', token, {httpOnly: true}); // Save to Cookies
+            res.json({ token }) 
         });
 
     } catch (error) {
@@ -167,13 +166,18 @@ router.post('/login', async (req, res) => {
 })
 
 function verifyToken (req, res, next) {
-    const bearerHeader = req.headers['authorization']
-    if(typeof bearerHeader !== 'undefined') {
-        const bearerToken = bearerHeader.split(' ')[1]
-        req.token = bearerToken
-        next()
+    const token = req.cookies.jwt;
+    if(token) {
+        jwt.verify(token, "secret", (err, decoded) => {
+            if(err) {
+                return res.json({error: "Token är tokig"})
+            } else {
+                req.user = decoded.user;
+                next();
+            }
+        })
     } else {
-        res.sendStatus(403)
+        res.sendStatus(403);
     }
 }
 
@@ -188,6 +192,17 @@ router.post('/register', async (req, res) => {
     } catch (error) {
         res.status(400).json({msg: error.message})
     }
+})
+
+router.post('/logout', verifyToken, (req, res) => {
+    jwt.verify(req.cookies.jwt, 'secret', (err, authData) => {
+        if(err) {
+            res.sendStatus(403);
+        } else {
+            res.clearCookie('jwt');
+            res.json({ message: 'Logout successful' });
+        }
+    })
 })
 
 module.exports = router
