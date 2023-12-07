@@ -11,19 +11,21 @@ router.use(express.json());
 //POSTS
 
 // Post a post to database
-router.post('/posts', verifyToken, async (req, res) => {
-    jwt.verify(req.token, 'secret', (err) => {
+router.post('/posts', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secret', async (err) => {
         if(err) {
             res.sendStatus(403)
-        } 
+        } else {
+            const {title, content, author} = req.body
+            try {
+                const post = await Post.create({title, content, author})
+                res.status(200).json(post)
+            } catch (error) {
+                res.status(400).json({msg: error.message})
+            }
+        }
     })
-    const {title, content, author} = req.body
-    try {
-        const post = await Post.create({title, content, author})
-        res.status(200).json(post)
-    } catch (error) {
-        res.status(400).json({msg: error.message})
-    }
+    
 })
 
 // Get all the posts from database
@@ -37,26 +39,39 @@ router.get('/posts', async (req, res) => {
 })
 
 // Get specific post from database by id
-router.get('/posts/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const result = await Post.find({ _id: `${id}`})
-        res.status(200).json(result)
-    } catch (error) {
-        res.status(400).json({msg: error.message})
-    }
+router.get('/posts/:id', verifyToken, (req, res) => {
+   jwt.verify(req.token, 'secret', async (err) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            try {
+                const id = req.params.id;
+                const result = Post.find({ _id: `${id}`})
+                res.status(200).json(result)
+            } catch (error) {
+                res.status(400).json({msg: error.message})
+            }
+        }
+   })
 })
 
 // Update specific post in database
-router.put('/posts/:id', async (req, res) => {
-    try {
-        const id = req.params.id;
-        const update = await Post.findByIdAndUpdate(id, req.body)
-        res.status(200).json(update)
-    } catch (error) {
-        res.status(400).json({msg: error.message})
-    }
-
+router.put('/posts/:id', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secret', async (err) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            try {
+                const id = req.params.id;
+                const update = await Post.findByIdAndUpdate(id, req.body)
+                res.status(200).json(update)
+            } catch (error) {
+                res.status(400).json({msg: error.message})
+            }
+        
+        }
+    })
+   
 })
 
 // Get the most recent post from database by date/time
@@ -70,40 +85,53 @@ router.get('/most-recent', async (req, res) => {
 })
 
 // Delete a post from the database and the associated comments from comment document
-router.delete('/posts/:id', async (req, res) => {
-    let data = [];
-    try {
-        const id = req.params.id;
-        const result = await Post.findByIdAndDelete(id);
-        data['data1'] = result;
-
-        const removeComments = await Comment.deleteMany({post: id}) // Only deletes all the comments connected to the post 
-        data['data2'] = removeComments;
-
-        return res.status(200).json(data)
-    } catch (error) {
-        res.status(404).json({msg: error.message})
-    }
+router.delete('/posts/:id', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secret', async(err) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            let data = [];
+            try {
+                const id = req.params.id;
+                const result = await Post.findByIdAndDelete(id);
+                data['data1'] = result;
+        
+                const removeComments = await Comment.deleteMany({post: id}) // Only deletes all the comments connected to the post 
+                data['data2'] = removeComments;
+        
+                return res.status(200).json(data)
+            } catch (error) {
+                res.status(404).json({msg: error.message})
+            }
+        }
+    })
+    
 })
 
 //COMMENTS
-router.post('/posts/:id/comments', async (req, res) => {
-    const id = req.params.id;
-    const {author, content, post} = req.body
-    try {
-        const comment = await Comment.create({ author, content, post })
-        const updatedPost = await Post.findOneAndUpdate(
-            {_id: id}, 
-            {
-                $push: { comments: comment} 
-            },
-            {new: true}
-        )
-        res.status(200).json(updatedPost);
-    } catch (error) {
-        res.status(400).json({msg: error.message})
-    }
-
+router.post('/posts/:id/comments', verifyToken, (req, res) => {
+    jwt.verify(req.token, 'secret', async (err) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            const id = req.params.id;
+            const {author, content, post} = req.body
+            try {
+                const comment = await Comment.create({ author, content, post })
+                const updatedPost = await Post.findOneAndUpdate(
+                    {_id: id}, 
+                    {
+                        $push: { comments: comment} 
+                    },
+                    {new: true}
+                )
+                res.status(200).json(updatedPost);
+            } catch (error) {
+                res.status(400).json({msg: error.message})
+            }
+        }
+    })
+   
 })
 
 // USERS
