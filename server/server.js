@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/blog', blogRoutes)
 
-// Anslutning till databas (MongoDB) och start av server
+// Connection to database and start of server (MongoDB)
 mongoose.connect('mongodb://localhost:27017/blog')
 .then((result) => app.listen(3000))
 .catch((err) => console.log(err))
