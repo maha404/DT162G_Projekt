@@ -2,6 +2,7 @@ require('dotenv').config();
 const secretKey = process.env.JWT_SECRET; // JWT secret key from .env file
 const User = require('../models/UserModel');
 const jwt = require("jsonwebtoken");
+const { jwtDecode } = require("jwt-decode");
 const bcrypt = require('bcrypt');
 
 // Logs in the user 
@@ -51,19 +52,24 @@ const user_register = async (req, res) => {
 
 // Logout a user 
 const user_logout = (req, res) => {
-    jwt.verify(req.cookies.jwt, secretKey, (err, authData) => {
-        if(err) {
-            res.sendStatus(403); // Forbidden 
-        } else {
-            res.clearCookie('jwt');
-            res.json({ message: 'Logout successful' });
-        }
-    })
+    
+    res.clearCookie('jwt');
+    res.json({ message: 'Logout successful' });
+  
+}
+
+// Get username
+const user_info = (req, res) => {
+    const token = req.cookies.jwt
+    const decoded = jwtDecode(token);
+    const username = decoded.user.username;
+    res.status(200).json(username);
 }
 
 // Export of the modules
 module.exports = {
     user_login, 
     user_register, 
-    user_logout
+    user_logout, 
+    user_info
 }
