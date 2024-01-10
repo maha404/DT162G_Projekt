@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+
+body {
+    background-color: #003D5C;
+}
+
+.con {
+    background-color: white;
+    margin-top: 5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    width: 40%;
+    border-radius: 1rem;
+}
+
+.post {
+    border-left: 1.5rem #A5C77F solid;
+    border-right: 1px gray solid;
+    border-top: 1px gray solid; 
+    border-bottom: 1px gray solid;
+    border-radius: 1%;
+    background-color: white;
+    width: 50%;
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.posts-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin-top: 2rem;
+    margin: 2rem;
+    width: 75%;
+    height: 20%;
+}
+
+
+.update-form {
+    background-color: white;
+    padding: 2rem;
+    margin-top: 5rem;
+    width: 50%;
+}
+
+.single-post {
+    background-color:white;
+    width: 50%;
+    margin-top: 2rem;
+    margin-bottom: 8rem;
+    padding: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+    .con {
+        width: 75%
+    }
+
+}
+
+@media screen and (min-width: 300px) and (max-width: 800px) {
+    .post {
+        width: 100%;
+    }
+
+    .posts-container {
+        flex-direction: column;
+        width: 90%;
+        margin: 0.5rem;
+    }
+
+    .update-form {
+        width: 75%;
+    }
+
+    .single-post {
+        width: 100%;
+    }
+}
+
