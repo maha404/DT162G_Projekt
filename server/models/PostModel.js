@@ -14,7 +14,12 @@ const postSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref:"users", 
         required: true
-    }, 
+    },
+    author_name: {
+        type: String, 
+        ref:"users",
+        required: true
+    },
     comments: [{
         _id: {type: mongoose.Schema.Types.ObjectId, ref:'comments'}, 
         author: String, 
