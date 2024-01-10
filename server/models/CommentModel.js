@@ -7,10 +7,10 @@ const commentSchema = new Schema({
         required: true
     }, 
     author: {
-        type: mongoose.Schema.Types.ObjectId, 
+        type: String, 
         ref: "users",
         required: true
-    }, 
+    },
     post: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "posts", 
