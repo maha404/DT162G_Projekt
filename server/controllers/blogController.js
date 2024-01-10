@@ -2,6 +2,7 @@ require('dotenv').config();
 const secretKey = process.env.JWT_SECRET; // JWT secret key from .env file
 const Post = require('../models/PostModel');
 const jwt = require("jsonwebtoken");
+const { jwtDecode } = require("jwt-decode");
 const Comment = require('../models/CommentModel');
 
 // Create a new post and add to db
@@ -9,10 +10,15 @@ const blog_create_post = (req, res) => {
     jwt.verify(req.cookies.jwt, secretKey, async (err) => { // Verification for JWT token in cookies
          if(err) {
             res.sendStatus(403) // Forbidden
+            console.log(err)
         } else {
-            const {title, content, author} = req.body
+            const {title, content} = req.body
+            const token = req.cookies.jwt
+            const decoded = jwtDecode(token);
+            const author_name = decoded.user.username;
+            const author = decoded.user._id;
             try {
-                const post = await Post.create({title, content, author})
+                const post = await Post.create({title, content, author, author_name})
                 res.status(200).json(post)
             } catch (error) {
                 res.status(400).json({msg: error.message})
@@ -46,6 +52,23 @@ const blog_get_single = (req, res) => {
             }
         }
    })
+}
+
+// Get user post
+const blog_get_userposts = (req, res) => {
+    jwt.verify(req.cookies.jwt, secretKey, async (err) => {
+        if(err) {
+            res.sendStatus(403)
+        } else {
+            // Hämta alla poster beroende på user _id...
+            const token = req.cookies.jwt
+            const decoded = jwtDecode(token);
+            const userId = decoded.user._id;
+            const result = await Post.find({author: userId})
+            res.status(200).json(result);
+
+        }
+    })
 }
 
 // Update an post with id in db
@@ -106,9 +129,13 @@ const blog_post_comment = (req, res) => {
             res.sendStatus(403) // Forbidden
         } else {
             const id = req.params.id;
-            const {author, content, post} = req.body
+            const post = req.params.id;
+            const token = req.cookies.jwt
+            const decoded = jwtDecode(token);
+            const author = decoded.user.username;
+            const {content} = req.body
             try {
-                const comment = await Comment.create({ author, content, post })
+                const comment = await Comment.create({ author, content, post})
                 const updatedPost = await Post.findOneAndUpdate(
                     {_id: id}, 
                     {
@@ -128,7 +155,8 @@ const blog_post_comment = (req, res) => {
 module.exports = {
     blog_create_post, 
     blog_get_post, 
-    blog_get_single, 
+    blog_get_single,
+    blog_get_userposts, 
     blog_update_post, 
     blog_get_recent, 
     blog_delete_post, 
