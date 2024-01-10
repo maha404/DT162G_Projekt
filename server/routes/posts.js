@@ -9,21 +9,23 @@ const router = express.Router();
 router.use(express.json());
 
 //          Post Routes 
-
 // Post a post to database
 router.post('/posts', verifyToken, blogController.blog_create_post);
 
 // Get all the posts from database
-router.get('/posts', verifyToken, blogController.blog_get_post);
+router.get('/posts', blogController.blog_get_post);
 
 // Get specific post from database by id
 router.get('/posts/:id', verifyToken, blogController.blog_get_single);
+
+// Get all the users posts
+router.get('/user', verifyToken, blogController.blog_get_userposts);
 
 // Update specific post in database
 router.put('/posts/:id', verifyToken, blogController.blog_update_post);
 
 // Get the most recent post from database by date/time
-router.get('/most-recent', verifyToken, blogController.blog_get_recent);
+router.get('/most-recent', blogController.blog_get_recent);
 
 // Delete a post from the database and the associated comments from comment document
 router.delete('/posts/:id', verifyToken, blogController.blog_delete_post);
@@ -40,7 +42,10 @@ router.post('/login', userController.user_login);
 router.post('/register', userController.user_register);
 
 // Logout user
-router.post('/logout', verifyToken, userController.user_logout);
+router.post('/logout', userController.user_logout);
+
+// Get the user
+router.get('/user_info', verifyToken, userController.user_info)
 
 // Middleware for tokens
 function verifyToken (req, res, next) {
