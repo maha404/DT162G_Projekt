@@ -6,7 +6,9 @@ import MainNavbar from "./components/Navbar";
 import PrivateRoute from './Privateroute/PrivateRoute';
 
 // Other tools
-import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import Auth from "./IsAuth";
 
 // Pages 
 import Home from './pages/Home';
@@ -16,10 +18,43 @@ import Profile from './pages/Profile';
 import Post from './pages/Post'
 import UpdatePost from './pages/UpdatePost';
 
+const AutoLogout = () => {
+  
+  const navigate = useNavigate();
+  const isAuthenticated = Auth();
+
+  useEffect(() => {
+      if(isAuthenticated) {
+          const timeout = setTimeout(() => {
+          console.log('loggar ut...')
+          LogoutUser();
+        }, 60 * 60 * 1000);
+
+        return () => clearTimeout(timeout);
+      }
+  }, [isAuthenticated]);
+
+  const LogoutUser = async () => {
+    const response = await fetch('http://localhost:3000/blog/logout', {
+          method: 'POST', 
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        
+        if(response.ok) {
+          navigate("/logga_in"); 
+        }
+  }
+
+}
+
 function App() {
   return (
     <div className="App">
         <BrowserRouter>
+        <AutoLogout/>
         <MainNavbar /> 
           <Routes>
               <Route
