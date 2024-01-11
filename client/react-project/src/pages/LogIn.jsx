@@ -15,10 +15,10 @@ import Cookies from "js-cookie";
 
 const LogIn = () => {
 
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const [errorMessage, setErrorMessage] = useState('')
+    const [errorMessage, setErrorMessage] = useState('');
 
     // Handling the submit
     const handleSubmit = async (e) => {
@@ -33,12 +33,12 @@ const LogIn = () => {
             }
         })
 
-        const json = await response.json(); // FEL HÄR? (Felet är ingen utskrift för felmeddelandet)
+        const json = await response.json();
     
-        if(response.status === 404) {
-            setErrorMessage('Användaruppgifterna stämmer inte!')
+        if(response.status === 404 || response.status === 401) {
+            setErrorMessage('Användaruppgifterna stämmer inte!');
         } else {
-            setErrorMessage('')
+            setErrorMessage('');
         }
 
         if(response.ok) {
