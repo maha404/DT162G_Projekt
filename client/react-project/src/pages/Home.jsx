@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // Styling for bootstrap componen
 
 // Other tools
 import { useEffect, useState } from 'react';
+import Notification from '../components/Notification';
 
 const Home = () => {
 
@@ -30,6 +31,7 @@ const Home = () => {
     return (
         <>
         <Header/>
+        <Notification/>
             <div className='d-flex flex-column justify-content-center align-items-center mt-3 mb-5'>
                 <Bar blogPost={blogPost} setBlogPost={setBlogPost}/>
                     {blogPost && blogPost.map((blogPost) => (
