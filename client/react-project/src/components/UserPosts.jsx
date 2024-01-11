@@ -7,18 +7,15 @@ import {Link} from 'react-router-dom';
 
 const UserPosts = ({blogPost, fetchFunction}) => {
 
-    function deletePost () {
+    const deletePost = async () => {
       let postId = blogPost._id;
 
-      const response = fetch('http://localhost:3000/blog/posts/' + postId, {
+      const response = await fetch('http://localhost:3000/blog/posts/' + postId, {
         method: 'DELETE', 
         credentials: 'include'
       })
       
-      if(response.ok) {
-        fetchFunction();
-      }
-
+      fetchFunction();
     }
 
     return (
