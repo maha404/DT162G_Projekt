@@ -15,14 +15,14 @@ const user_login = async (req, res) => {
 
         // If user can't be found an error message will be sent
         if(!user) {
-            res.status(404).send("Användaren kunde inte hittas!")
+            res.status(404).json({msg: "Användaren kunde inte hittas!"})
         }
         // Check if the password is the same as in the database
         const validPassword = await bcrypt.compare(password, user.password)
 
         // If password is not valid a error message will be sent
         if (!validPassword) {
-            res.status(401).send('Lösenordet är felaktigt!')
+            res.status(401).json({ msg: 'Lösenordet är felaktigt!'})
         }
 
         // Generate token and save it in cookies, token expires in 1h
