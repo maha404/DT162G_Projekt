@@ -16,7 +16,7 @@ router.post('/posts', verifyToken, blogController.blog_create_post);
 router.get('/posts', blogController.blog_get_post);
 
 // Get specific post from database by id
-router.get('/posts/:id', verifyToken, blogController.blog_get_single);
+router.get('/posts/:id', blogController.blog_get_single);
 
 // Get all the users posts
 router.get('/user', verifyToken, blogController.blog_get_userposts);

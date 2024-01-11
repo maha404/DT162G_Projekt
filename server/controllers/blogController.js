@@ -38,20 +38,14 @@ const blog_get_post = async (req, res) => {
 }
 
 // Get single post by id from db
-const blog_get_single = (req, res) => {
-    jwt.verify(req.cookies.jwt, secretKey, async (err) => { // Verification for JWT token in cookies
-        if(err) {
-            res.sendStatus(403) // Forbidden
-        } else {
-            try {
-                const id = req.params.id;
-                const result = await Post.find({ _id: id})
-                res.status(200).json(result)
-            } catch (error) {
-                res.status(400).json({msg: error.message})
-            }
-        }
-   })
+const blog_get_single = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const result = await Post.find({ _id: id})
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(400).json({msg: error.message})
+    }
 }
 
 // Get user post
