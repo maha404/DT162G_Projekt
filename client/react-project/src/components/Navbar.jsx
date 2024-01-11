@@ -28,6 +28,7 @@ const MainNavbar = () => {
       
       if(response.ok) {
         navigate("/"); 
+        setUsername('');
       }
       
     }
@@ -41,6 +42,7 @@ const MainNavbar = () => {
           credentials: 'include'
         })
   
+        console.log('Fetching username...');
         const json = await response.json();
   
         if(response.ok) {
@@ -48,9 +50,11 @@ const MainNavbar = () => {
         }
       }
 
-      getUsername();
-
-    }, [])
+      if(isAuthenticated) {
+        getUsername();
+      }
+      
+    }, [isAuthenticated])
     
     return (  
     <Navbar expand="lg" className="bg-light shadow d-flex flex-row">
