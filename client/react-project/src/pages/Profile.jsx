@@ -36,11 +36,13 @@ const Profile = () => {
             <div className='bg-light p-2'>
                 <PostForm fetchFunction={fetchPosts} />
             </div>
-            <div className='posts-container'>
+            {blogPost !== null && (
+                <div className='posts-container'>
                 {blogPost && blogPost.map((blogPost) => (
                         <UserPosts key={blogPost._id} blogPost={blogPost} fetchFunction={fetchPosts}/>
                     ))}
-            </div>
+                </div>
+            )}
         </div>
     );
 }

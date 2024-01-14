@@ -34,9 +34,11 @@ const Home = () => {
         <Notification/>
             <div className='d-flex flex-column justify-content-center align-items-center mt-3 mb-5'>
                 <Bar blogPost={blogPost} setBlogPost={setBlogPost}/>
-                    {blogPost && blogPost.map((blogPost) => (
+                {blogPost && blogPost !== null ? (
+                    blogPost.map((blogPost) => (
                         <BlogDetails key={blogPost._id} blogPost={blogPost}/>
-                    ))}
+                    ))
+                ) : (<p>Här var det tomt...</p>)}
             </div>
         </>
     );
