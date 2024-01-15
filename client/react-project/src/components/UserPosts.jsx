@@ -18,13 +18,16 @@ const UserPosts = ({blogPost, fetchFunction}) => {
       fetchFunction();
     }
 
+    const fullContent = blogPost.content;
+    const shortContent = fullContent.slice(0, 100);
+
     return (
         <Card className="posts-container">
         <Card.Body className="single-post">
           <Card.Title>{blogPost.title}</Card.Title>
           <Card.Subtitle className="mb-2 text-muted">{blogPost.author_name}</Card.Subtitle>
           <Card.Text>
-          {blogPost.content}
+          {shortContent}...
           </Card.Text>
           <Link to={`/redigera/${blogPost._id}`}><Button variant="warning"><i class="bi bi-pencil"></i> Ändra</Button></Link>{' '}
           <Button variant='danger' onClick={deletePost}><i class="bi bi-trash"></i> Radera</Button>

@@ -10,6 +10,9 @@ const BlogDetails = ({blogPost}) => {
     const comments = blogPost.comments;
     const numberOfComments = comments.length;
 
+    const fullContent = blogPost.content;
+    const shortContent = fullContent.slice(0, 100);
+
     return (
       <div className="post" >
         <div id={blogPost._id}>
@@ -17,7 +20,7 @@ const BlogDetails = ({blogPost}) => {
           <h3>{blogPost.title}</h3>
           <p>Postad av {blogPost.author_name}</p>
             <p>
-            {blogPost.content}
+            {shortContent}...
             </p>
         </div>
         <div className='d-flex mt-3'>
